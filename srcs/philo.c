@@ -3,58 +3,93 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcordonn <tcordonn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thomas <thomas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 15:14:18 by tcordonn          #+#    #+#             */
-/*   Updated: 2021/10/06 13:15:10 by tcordonn         ###   ########.fr       */
+/*   Updated: 2021/12/16 18:48:45 by thomas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philo.h"
 
-void	*routine(void *arg)
+int	check_death(t_philo *ph, int i)
 {
-	t_philo philo;
+	pthread_mutex_lock(&ph->inf->dead);
+	if (i)
+		ph->inf->stop = i;
+	if (ph->inf->stop)
+	{
+		pthread_mutex_unlock(&ph->inf->dead);
+		return (1);
+	}
+	pthread_mutex_unlock(&ph->inf->dead);
+	return (0);
+}
 
-	philo = *((t_philo *) arg);
-	//think();
-	//eat();
-	//sleep;
-	// if life call to routine
-	// if num of meals
+void	*is_dead(void	*data)
+{
+	t_philo		*ph;
+
+	ph = (t_philo *)data;
+	ft_usleep(ph->inf->die + 1);
+	pthread_mutex_lock(&ph->inf->time_eat);
+	pthread_mutex_lock(&ph->inf->finish);
+	if (!check_death(ph, 0) && !ph->finish && ((actual_time() - ph->eat_t) \
+		>= (long)(ph->inf->die)))
+	{
+		pthread_mutex_unlock(&ph->inf->time_eat);
+		pthread_mutex_unlock(&ph->inf->finish);
+		pthread_mutex_lock(&ph->inf->write_mutex);
+		write_status("died\n", ph);
+		pthread_mutex_unlock(&ph->inf->write_mutex);
+		check_death(ph, 1);
+	}
+	pthread_mutex_unlock(&ph->inf->time_eat);
+	pthread_mutex_unlock(&ph->inf->finish);
 	return (NULL);
 }
 
-void	init(t_philo *philos, char **argv)
+void	*thread(void *data)
 {
-	philos->info->time_to_die = ft_atoi(argv[2]) * 1000;
-	philos->info->time_to_eat = ft_atoi(argv[3]) * 1000;
-	philos->info->time_to_think = ft_atoi(argv[4]) * 1000;
-	philos->finish = -1;
-	if (argv[5] != NULL)
-		philos->info->meals = ft_atoi(argv[5]);
-	else
-		philos->info->meals = -1;
-	pthread_create(&philos->thread_id, NULL, routine, philos);
+	t_philo	*ph;
+
+	ph = (t_philo *)data;
+	if (ph->id % 2 == 0)
+		ft_usleep(ph->inf->eat / 10);
+	while (!check_death(ph, 0))
+	{
+		pthread_create(&ph->thread_death_id, NULL, is_dead, data);
+		routine(ph);
+		pthread_detach(ph->thread_death_id);
+		if ((int)++ph->nb_eat == ph->inf->meals)
+		{
+			pthread_mutex_lock(&ph->inf->finish);
+			ph->finish = 1;
+			ph->inf->ph_finish++;
+			if (ph->inf->ph_finish == ph->inf->philos)
+			{
+				pthread_mutex_unlock(&ph->inf->finish);
+				check_death(ph, 2);
+			}
+			pthread_mutex_unlock(&ph->inf->finish);
+			return (NULL);
+		}
+	}
+	return (NULL);
 }
 
-int	main(int argc, char **argv)
-{
-	t_philo		philos[ft_atoi(argv[1])];
-	int			num_of_threads;
-	int			i;
 
-	i = -1;
-	(void)argc;
-	/*if (argc > 5 || argc < 4)
-		return (-1);*/
-	num_of_threads = ft_atoi(argv[2]);
-	printf("Before_threads\n");
-	while (i++ < num_of_threads)
-		init(&philos[i], argv);
-	i = -1;
-	while (i++ < num_of_threads)
-		pthread_join(philos[i].thread_id, NULL);
-	printf("After Threads\n");
-	return (0);
+int	start_threads(t_philos *p)
+{
+	int	i;
+
+	i = 0;
+	while (i < p->inf.philos)
+	{
+		p->ph[i].inf = &p->inf;
+		if (pthread_create(&p->ph[i].thread_id, NULL, thread, &p->ph[i]) != 0)
+			return (write_error("Pthread error\n"));
+		i++;
+	}
+	return (1);
 }

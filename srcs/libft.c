@@ -1,20 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_swap.c                                          :+:      :+:    :+:   */
+/*   libft.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcordonn <tcordonn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thomas <thomas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/07/25 11:28:38 by tcordonn          #+#    #+#             */
-/*   Updated: 2020/07/25 15:35:02 by tcordonn         ###   ########.fr       */
+/*   Created: 2021/11/16 14:35:54 by thomas            #+#    #+#             */
+/*   Updated: 2021/12/16 17:44:37 by thomas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
+#include "../include/philo.h"
 
-void	ft_swap(int x1, int x2)
+int	ft_strlen(char *str)
 {
-	x1 += x2;
-	x2 = x1 - x2;
-	x1 -= x2;
+	int		i;
+
+	i = 0;
+	while (str[i])
+		i++;
+	return (i);
+}
+
+void	ft_putstr_fd(char *str, int fd)
+{
+	int i;
+
+	i = 0;
+	while (str[i])
+		write(fd, &str[i++], 1);
 }
