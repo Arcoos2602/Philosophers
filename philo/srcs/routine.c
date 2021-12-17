@@ -6,7 +6,7 @@
 /*   By: thomas <thomas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/07 14:40:47 by thomas            #+#    #+#             */
-/*   Updated: 2021/12/17 09:28:52 by thomas           ###   ########.fr       */
+/*   Updated: 2021/12/17 09:35:06 by thomas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	routine(t_philo *ph)
 	pthread_mutex_unlock(&ph->inf->write_mutex);
 	if (!ph->next_f)
 	{
-		ft_usleep(ph->inf->die * 2); // * 2
+		ft_usleep(ph->inf->die);
 		//check_death(ph, 1);
 		return ;
 	}
