@@ -12,7 +12,26 @@
 
 #include "../include/philo.h"
 
-long int	actual_time(void)
+int	write_error(char *str)
+{
+	ft_putstr_fd("Error : ", 2);
+	ft_putstr_fd(str, 2);
+	return (0);
+}
+
+int	trigger_end(t_philos *ph)
+{
+	pthread_mutex_lock(&ph->inf.death);
+	if (ph->inf.stop)
+	{
+		pthread_mutex_unlock(&ph->inf.death);
+		return (1);
+	}
+	pthread_mutex_unlock(&ph->inf.death);
+	return (0);
+}
+
+long int	ft_get_time(void)
 {
 	long int			time;
 	struct timeval		current_time;
@@ -28,7 +47,7 @@ void	ft_usleep(long int ms)
 {
 	long int	start_time;
 
-	start_time = actual_time();
-	while ((actual_time() - start_time) < ms)
+	start_time = ft_get_time();
+	while ((ft_get_time() - start_time) < ms)
 		usleep(ms / 10);
 }

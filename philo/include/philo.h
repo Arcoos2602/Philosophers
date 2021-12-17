@@ -28,18 +28,18 @@ typedef struct s_info
 	long int				meals;
 	long int				start_t;
 	pthread_mutex_t			write_mutex;
-	pthread_mutex_t			dead;
-	pthread_mutex_t			time_eat;
+	pthread_mutex_t			death;
+	pthread_mutex_t			time_to_eat;
 	pthread_mutex_t			finish;
 	int						ph_finish;
 	int						stop;
 }					t_info;
 
-typedef struct 		s_philo
+typedef struct s_philo
 {
-	int	id;
-	pthread_t		thread_id;
-	pthread_t		thread_death_id;
+	int						id;
+	pthread_t				thread_id;
+	pthread_t				thread_death_id;
 	pthread_mutex_t			*next_f;
 	pthread_mutex_t			my_f;
 	t_info					*inf;
@@ -56,13 +56,17 @@ typedef struct s_philos
 
 int		parse(int argc, char **argv, t_philos *p);
 void	ft_putstr_fd(char *str, int fd);
-long int actual_time(void);
+long	int	ft_atol(const char *nptr);
+long	int	ft_get_time(void);
 int		write_error(char *str);
 int		initialize(t_philos *ph);
 int		start_threads(t_philos *ph);
 void	ft_usleep(long int time_in_ms);
-int		check_death(t_philo *ph, int i);
+int		any_death(t_philo *ph, int i);
+int		write_error(char *str);
 void	write_status(char *str, t_philo *ph);
 void	routine(t_philo *ph);
+int		trigger_end(t_philos *ph);
+int		end_threads_and_mutex(t_philos *p);
 
 #endif

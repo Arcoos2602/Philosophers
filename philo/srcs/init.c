@@ -12,29 +12,7 @@
 
 #include "../include/philo.h"
 
-long int	ft_atol(const char *nptr)
-{
-	long int	res;
-	long int	sign;
-
-	sign = 1;
-	res = 0;
-	while (*nptr && (*nptr == ' ' || *nptr == '\n' || *nptr == '\t'
-			|| *nptr == '\v' || *nptr == '\f' || *nptr == '\r'))
-		nptr++;
-	if (*nptr == '-')
-		sign = -1;
-	if (*nptr == '-' || *nptr == '+')
-		nptr++;
-	while (*nptr && *nptr >= '0' && *nptr <= '9')
-	{
-		res = res * 10 + (*nptr - 48);
-		nptr++;
-	}
-	return (res * sign);
-}
-
-int numeric(char **argv)
+int	numeric(char **argv)
 {
 	int	i;
 	int	j;
@@ -52,11 +30,26 @@ int numeric(char **argv)
 	return (1);
 }
 
-int		parse(int argc, char **argv, t_philos *p)
+int	check_limits(t_philos *p, int argc)
 {
 	long int	m;
 
 	m = 2147483647;
+	if (p->inf.philos <= 0 || p->inf.die <= 0 || p->inf.eat <= 0 \
+			|| p->inf.sleep <= 0 || (argc == 6 && p->inf.meals < 0))
+		return (write_error("Lower or equal to 0 argument(s)\n"));
+	if (p->inf.philos > m || p->inf.die > m || p->inf.eat > m \
+			|| p->inf.sleep > m || p->inf.meals > m)
+		return (write_error("Bigger than int max argument(s)\n"));
+	m = -2147483648;
+	if (p->inf.philos < m || p->inf.die < m || p->inf.eat < m \
+			|| p->inf.sleep < m || (argc == 6 && p->inf.meals < m))
+		return (write_error("Lower than int min argument(s)\n"));
+	return (1);
+}
+
+int	parse(int argc, char **argv, t_philos *p)
+{
 	if ((argc == 5 || argc == 6) && numeric(argv))
 	{
 		p->inf.philos = ft_atol(argv[1]);
@@ -66,12 +59,8 @@ int		parse(int argc, char **argv, t_philos *p)
 		p->inf.meals = -1;
 		if (argc > 5)
 			p->inf.meals = ft_atol(argv[5]);
-		if (p->inf.philos <= 0 || p->inf.die <= 0 || p->inf.eat <= 0 \
-			|| p->inf.sleep <= 0)
-			return (write_error("Lower or equal to 0 argument(s)\n"));
-		if (p->inf.philos > m || p->inf.die > m || p->inf.eat > m \
-			|| p->inf.sleep > m || p->inf.meals > m)
-			return (write_error("Bigger than int max argument(s)\n"));
+		if (!check_limits(p, argc))
+			return (0);
 		return (1);
 	}
 	return (write_error("Minimum of arguments is 4\n"));
@@ -80,8 +69,8 @@ int		parse(int argc, char **argv, t_philos *p)
 void	init_mutex(t_philos *p)
 {
 	pthread_mutex_init(&p->inf.write_mutex, NULL);
-	pthread_mutex_init(&p->inf.dead, NULL);
-	pthread_mutex_init(&p->inf.time_eat, NULL);
+	pthread_mutex_init(&p->inf.death, NULL);
+	pthread_mutex_init(&p->inf.time_to_eat, NULL);
 	pthread_mutex_init(&p->inf.finish, NULL);
 }
 
@@ -90,7 +79,7 @@ int	initialize(t_philos *p)
 	int	i;
 
 	i = -1;
-	p->inf.start_t = actual_time();
+	p->inf.start_t = ft_get_time();
 	p->inf.stop = 0;
 	p->inf.ph_finish = 0;
 	init_mutex(p);

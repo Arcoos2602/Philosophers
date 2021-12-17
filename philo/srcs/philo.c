@@ -12,39 +12,65 @@
 
 #include "../include/philo.h"
 
-int	check_death(t_philo *ph, int i)
+int	end_threads_and_mutex(t_philos *p)
 {
-	pthread_mutex_lock(&ph->inf->dead);
-	if (i > 0)
-		ph->inf->stop = i;
-	if (ph->inf->stop)
+	int	i;
+
+	i = -1;
+	while (!trigger_end(p))
 	{
-		pthread_mutex_unlock(&ph->inf->dead);
-		return (1);
+		ft_usleep(1);
 	}
-	pthread_mutex_unlock(&ph->inf->dead);
+	pthread_mutex_destroy(&p->inf.write_mutex);
+	pthread_mutex_destroy(&p->inf.death);
+	pthread_mutex_destroy(&p->inf.time_to_eat);
+	pthread_mutex_destroy(&p->inf.finish);
+	while (++i < p->inf.philos)
+		pthread_mutex_destroy(&p->ph[i].my_f);
+	i = -1;
+	while (++i < p->inf.philos)
+	{
+		pthread_join(p->ph[i].thread_id, NULL);
+	}
+	if (p->inf.stop == 2)
+		printf("Each philosopher ate %ld time(s)\n", p->inf.meals);
+	free(p->ph);
 	return (0);
 }
 
-void	*is_dead(void	*data)
+int	any_death(t_philo *ph, int i)
+{
+	pthread_mutex_lock(&ph->inf->death);
+	if (i > 0)
+		ph->inf->stop = i;
+	if (ph->inf->stop > 0)
+	{
+		pthread_mutex_unlock(&ph->inf->death);
+		return (1);
+	}
+	pthread_mutex_unlock(&ph->inf->death);
+	return (0);
+}
+
+void	*supervisor(void	*data)
 {
 	t_philo		*ph;
 
 	ph = (t_philo *)data;
 	ft_usleep(ph->inf->die + 1);
-	pthread_mutex_lock(&ph->inf->time_eat);
+	pthread_mutex_lock(&ph->inf->time_to_eat);
 	pthread_mutex_lock(&ph->inf->finish);
-	if (!check_death(ph, 0) && !ph->finish && ((actual_time() - ph->eat_t) \
+	if (!any_death(ph, 0) && !ph->finish && ((ft_get_time() - ph->eat_t) \
 		>= (long)(ph->inf->die)))
 	{
-		pthread_mutex_unlock(&ph->inf->time_eat);
+		pthread_mutex_unlock(&ph->inf->time_to_eat);
 		pthread_mutex_unlock(&ph->inf->finish);
 		pthread_mutex_lock(&ph->inf->write_mutex);
 		write_status("died\n", ph);
 		pthread_mutex_unlock(&ph->inf->write_mutex);
-		check_death(ph, 1);
+		any_death(ph, 1);
 	}
-	pthread_mutex_unlock(&ph->inf->time_eat);
+	pthread_mutex_unlock(&ph->inf->time_to_eat);
 	pthread_mutex_unlock(&ph->inf->finish);
 	return (NULL);
 }
@@ -56,9 +82,9 @@ void	*thread(void *data)
 	ph = (t_philo *)data;
 	if (ph->id % 2 == 0)
 		ft_usleep(ph->inf->eat / 10);
-	while (!check_death(ph, 0))
+	while (!any_death(ph, 0))
 	{
-		pthread_create(&ph->thread_death_id, NULL, is_dead, data);
+		pthread_create(&ph->thread_death_id, NULL, supervisor, data);
 		routine(ph);
 		pthread_detach(ph->thread_death_id);
 		if ((int)++ph->nb_eat == ph->inf->meals)
@@ -69,7 +95,7 @@ void	*thread(void *data)
 			if (ph->inf->ph_finish == ph->inf->philos)
 			{
 				pthread_mutex_unlock(&ph->inf->finish);
-				check_death(ph, 2);
+				any_death(ph, 2);
 			}
 			pthread_mutex_unlock(&ph->inf->finish);
 			return (NULL);
@@ -77,7 +103,6 @@ void	*thread(void *data)
 	}
 	return (NULL);
 }
-
 
 int	start_threads(t_philos *p)
 {

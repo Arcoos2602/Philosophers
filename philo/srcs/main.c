@@ -12,47 +12,10 @@
 
 #include "../include/philo.h"
 
-int	write_error(char *str)
+int	main(int argc, char **argv)
 {
-	ft_putstr_fd("Error : ", 2);
-	ft_putstr_fd(str, 2);
-	return (0);
-}
+	t_philos	p;
 
-int	check_death2(t_philos *ph)
-{
-	pthread_mutex_lock(&ph->inf.dead);
-	if (ph->inf.stop)
-	{
-		pthread_mutex_unlock(&ph->inf.dead);
-		return (1);
-	}
-	pthread_mutex_unlock(&ph->inf.dead);
-	return (0);
-}
-
-void	stop(t_philos *p)
-{
-	int	i;
-
-	i = -1;
-	while (!check_death2(p))
-		ft_usleep(1);
-	while (++i < p->inf.philos)
-		pthread_join(p->ph[i].thread_id, NULL);
-	pthread_mutex_destroy(&p->inf.write_mutex);
-	i = -1;
-	while (++i < p->inf.philos)
-		pthread_mutex_destroy(&p->ph[i].my_f);
-	if (p->inf.stop == 2)
-		printf("Each philosopher ate %ld time(s)\n", p->inf.meals);
-	free(p->ph);
-}
-
-int	main(int argc, char **argv) // norme comprehension et int min surtout pour arg des repas
-{
-	t_philos p;
-	
 	if (!parse(argc, argv, &p))
 		return (1);
 	p.ph = malloc(sizeof(t_philo) * p.inf.philos);
@@ -66,6 +29,5 @@ int	main(int argc, char **argv) // norme comprehension et int min surtout pour a
 		free(p.ph);
 		return (0);
 	}
-	stop(&p);
-	return (0);
+	return (end_threads_and_mutex(&p));
 }
