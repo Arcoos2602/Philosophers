@@ -6,7 +6,7 @@
 /*   By: thomas <thomas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/16 15:14:17 by thomas            #+#    #+#             */
-/*   Updated: 2021/12/16 18:36:05 by thomas           ###   ########.fr       */
+/*   Updated: 2021/12/17 08:44:43 by thomas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,11 @@ long int	actual_time(void)
 	return (time);
 }
 
-void	ft_usleep(long int time_in_ms)
+void	ft_usleep(long int ms)
 {
 	long int	start_time;
 
-	start_time = 0;
 	start_time = actual_time();
-	while ((actual_time() - start_time) < time_in_ms)
-		usleep(time_in_ms / 10);
+	while ((actual_time() - start_time) < ms)
+		usleep(ms / 10);
 }

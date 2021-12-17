@@ -6,7 +6,7 @@
 /*   By: thomas <thomas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/07 14:40:47 by thomas            #+#    #+#             */
-/*   Updated: 2021/12/16 18:27:50 by thomas           ###   ########.fr       */
+/*   Updated: 2021/12/17 09:28:52 by thomas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	write_status(char *str, t_philo *ph)
 	if (time >= 0 && time <= 2147483647 && !check_death(ph, 0)) // comprendre
 	{
 		printf("%ld ", time);
-		printf("Philo %d %s", ph->id, str);
+		printf("%d %s", ph->id, str);
 	}
 }
 
@@ -44,7 +44,8 @@ void	routine(t_philo *ph)
 	pthread_mutex_unlock(&ph->inf->write_mutex);
 	if (!ph->next_f)
 	{
-		ft_usleep(ph->inf->die * 2);
+		ft_usleep(ph->inf->die * 2); // * 2
+		//check_death(ph, 1);
 		return ;
 	}
 	pthread_mutex_lock(ph->next_f);

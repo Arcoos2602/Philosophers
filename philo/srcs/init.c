@@ -6,7 +6,7 @@
 /*   By: thomas <thomas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/07 14:20:17 by thomas            #+#    #+#             */
-/*   Updated: 2021/12/16 19:54:49 by thomas           ###   ########.fr       */
+/*   Updated: 2021/12/16 21:02:16 by thomas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int numeric(char **argv)
 		j = -1;
 		while (argv[i][++j])
 		{
-			if (argv[i][j] < '0' || argv[i][j] > '9')
+			if (argv[i][j] != '-' && (argv[i][j] < '0' || argv[i][j] > '9'))
 				return (write_error("Non numeric argument\n"));
 		}
 	}
@@ -68,10 +68,10 @@ int		parse(int argc, char **argv, t_philos *p)
 			p->inf.meals = ft_atol(argv[5]);
 		if (p->inf.philos <= 0 || p->inf.die <= 0 || p->inf.eat <= 0 \
 			|| p->inf.sleep <= 0)
-			return (write_error("Lower or equal to 0 argument(s)"));
+			return (write_error("Lower or equal to 0 argument(s)\n"));
 		if (p->inf.philos > m || p->inf.die > m || p->inf.eat > m \
 			|| p->inf.sleep > m || p->inf.meals > m)
-			write_error("Bigger than int max argument(s)\n");
+			return (write_error("Bigger than int max argument(s)\n"));
 		return (1);
 	}
 	return (write_error("Minimum of arguments is 4\n"));

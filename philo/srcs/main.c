@@ -6,7 +6,7 @@
 /*   By: thomas <thomas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/01 13:57:16 by thomas            #+#    #+#             */
-/*   Updated: 2021/12/16 19:57:10 by thomas           ###   ########.fr       */
+/*   Updated: 2021/12/17 08:46:42 by thomas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void	stop(t_philos *p)
 	free(p->ph);
 }
 
-int	main(int argc, char **argv)
+int	main(int argc, char **argv) // norme comprehension et int min surtout pour arg des repas
 {
 	t_philos p;
 	

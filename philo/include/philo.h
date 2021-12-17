@@ -6,7 +6,7 @@
 /*   By: thomas <thomas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 15:14:15 by tcordonn          #+#    #+#             */
-/*   Updated: 2021/12/16 20:00:31 by thomas           ###   ########.fr       */
+/*   Updated: 2021/12/17 09:31:08 by thomas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <pthread.h>
 # include <sys/time.h>
 
-typedef struct 		s_info
+typedef struct s_info
 {
 	long int				philos;
 	long int				die;
@@ -31,7 +31,7 @@ typedef struct 		s_info
 	pthread_mutex_t			dead;
 	pthread_mutex_t			time_eat;
 	pthread_mutex_t			finish;
-	int						ph_finish; // nb de ph finit
+	int						ph_finish;
 	int						stop;
 }					t_info;
 
@@ -39,16 +39,16 @@ typedef struct 		s_philo
 {
 	int	id;
 	pthread_t		thread_id;
-	pthread_t		thread_death_id; // id du thread qui check la mort pour la perf
-	pthread_mutex_t			*next_f; // pointeur sur la fourchette du voisin philo
-	pthread_mutex_t			my_f; // fourchette du philo
-	t_info					*inf; // pointeur sur info
-	long int				eat_t; // temps qu'il a pris pour manger pour le check ensuite
-	unsigned int			nb_eat; // nombre de fois où le philo a mangé
-	int						finish; // 0 ou 1
+	pthread_t		thread_death_id;
+	pthread_mutex_t			*next_f;
+	pthread_mutex_t			my_f;
+	t_info					*inf;
+	long int				eat_t;
+	unsigned int			nb_eat;
+	int						finish;
 }					t_philo;
 
-typedef struct s_philos // liste chaînée de philos
+typedef struct s_philos
 {
 	t_philo		*ph;
 	t_info		inf;

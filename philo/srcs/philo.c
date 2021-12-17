@@ -6,7 +6,7 @@
 /*   By: thomas <thomas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 15:14:18 by tcordonn          #+#    #+#             */
-/*   Updated: 2021/12/16 18:48:45 by thomas           ###   ########.fr       */
+/*   Updated: 2021/12/17 09:05:39 by thomas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int	check_death(t_philo *ph, int i)
 {
 	pthread_mutex_lock(&ph->inf->dead);
-	if (i)
+	if (i > 0)
 		ph->inf->stop = i;
 	if (ph->inf->stop)
 	{
