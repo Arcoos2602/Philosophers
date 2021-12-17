@@ -18,9 +18,7 @@ int	end_threads_and_mutex(t_philos *p)
 
 	i = -1;
 	while (!trigger_end(p))
-	{
-		ft_usleep(1);
-	}
+		usleep(1);
 	pthread_mutex_destroy(&p->inf.write_mutex);
 	pthread_mutex_destroy(&p->inf.death);
 	pthread_mutex_destroy(&p->inf.time_to_eat);
@@ -30,6 +28,7 @@ int	end_threads_and_mutex(t_philos *p)
 	i = -1;
 	while (++i < p->inf.philos)
 	{
+		//ft_putstr_fd("join\n", 1);
 		pthread_join(p->ph[i].thread_id, NULL);
 	}
 	if (p->inf.stop == 2)
@@ -57,7 +56,7 @@ void	*supervisor(void	*data)
 	t_philo		*ph;
 
 	ph = (t_philo *)data;
-	ft_usleep(ph->inf->die + 1);
+	ft_usleep(ph->inf->die + 1, ph);
 	pthread_mutex_lock(&ph->inf->time_to_eat);
 	pthread_mutex_lock(&ph->inf->finish);
 	if (!any_death(ph, 0) && !ph->finish && ((ft_get_time() - ph->eat_t) \
@@ -81,7 +80,7 @@ void	*thread(void *data)
 
 	ph = (t_philo *)data;
 	if (ph->id % 2 == 0)
-		ft_usleep(ph->inf->eat / 10);
+		ft_usleep(100, ph);
 	while (!any_death(ph, 0))
 	{
 		pthread_create(&ph->thread_death_id, NULL, supervisor, data);

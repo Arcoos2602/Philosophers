@@ -61,7 +61,7 @@ long	int	ft_get_time(void);
 int		write_error(char *str);
 int		initialize(t_philos *ph);
 int		start_threads(t_philos *ph);
-void	ft_usleep(long int time_in_ms);
+void	ft_usleep(long int time_in_ms, t_philo *ph);
 int		any_death(t_philo *ph, int i);
 int		write_error(char *str);
 void	write_status(char *str, t_philo *ph);

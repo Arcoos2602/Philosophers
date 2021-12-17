@@ -43,11 +43,13 @@ long int	ft_get_time(void)
 	return (time);
 }
 
-void	ft_usleep(long int ms)
+void	ft_usleep(long int ms, t_philo *ph)
 {
 	long int	start_time;
 
+	(void)ph;
 	start_time = ft_get_time();
-	while ((ft_get_time() - start_time) < ms)
+	//printf("%d\n", ph->inf->stop);
+	while ((ft_get_time() - start_time) < ms && !ph->inf->stop)
 		usleep(ms / 10);
 }

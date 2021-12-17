@@ -30,10 +30,23 @@ void	meditation(t_philo *ph)
 	pthread_mutex_lock(&ph->inf->write_mutex);
 	write_status("is sleeping\n", ph);
 	pthread_mutex_unlock(&ph->inf->write_mutex);
-	ft_usleep(ph->inf->sleep);
+	ft_usleep(ph->inf->sleep, ph);
 	pthread_mutex_lock(&ph->inf->write_mutex);
 	write_status("is thinking\n", ph);
 	pthread_mutex_unlock(&ph->inf->write_mutex);
+}
+
+void	eat(t_philo *ph)
+{
+	pthread_mutex_lock(&ph->inf->write_mutex);
+	write_status("is eating\n", ph);
+	pthread_mutex_lock(&ph->inf->time_to_eat);
+	ph->eat_t = ft_get_time();
+	pthread_mutex_unlock(&ph->inf->time_to_eat);
+	pthread_mutex_unlock(&ph->inf->write_mutex);
+	ft_usleep(ph->inf->eat, ph);
+	pthread_mutex_unlock(ph->next_f);
+	pthread_mutex_unlock(&ph->my_f);
 }
 
 void	routine(t_philo *ph)
@@ -48,14 +61,6 @@ void	routine(t_philo *ph)
 	pthread_mutex_lock(&ph->inf->write_mutex);
 	write_status("has taken a fork\n", ph);
 	pthread_mutex_unlock(&ph->inf->write_mutex);
-	pthread_mutex_lock(&ph->inf->write_mutex);
-	write_status("is eating\n", ph);
-	pthread_mutex_lock(&ph->inf->time_to_eat);
-	ph->eat_t = ft_get_time();
-	pthread_mutex_unlock(&ph->inf->time_to_eat);
-	pthread_mutex_unlock(&ph->inf->write_mutex);
-	ft_usleep(ph->inf->eat);
-	pthread_mutex_unlock(ph->next_f);
-	pthread_mutex_unlock(&ph->my_f);
+	eat(ph);
 	meditation(ph);
 }
