@@ -1,5 +1,5 @@
 # Philosophers
-Project to learn threads in c
+42 common circle project to learn threads in c
 
 USE :
 
